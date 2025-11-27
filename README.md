@@ -542,12 +542,7 @@ UFB相关
 
 - [Apprise](https://github.com/caronc/apprise)
 - [Telethon](https://github.com/LonamiWebs/Telethon)
-
-## ☕ 捐赠
-
-如果你觉得这个项目对你有帮助，欢迎通过以下方式请我喝杯咖啡：
-
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/0heavrnl)
+- [TelegramForwarder](https://github.com/Heavrnl/TelegramForwarder)
 
 
 ## 📄 开源协议
