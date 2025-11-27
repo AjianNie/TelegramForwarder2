@@ -51,3 +51,5 @@ Dockerfile
 docker-compose.yml
 .github
 .gitattributes
+.DS_Store
+
