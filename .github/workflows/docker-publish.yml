@@ -54,8 +54,8 @@ jobs:
           # 1. latest: 始终指向最新的版本
           # 2. git commit hash: 为每次提交创建一个唯一的、不可变的镜像版本，便于追溯
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/{{ github.event.repository.name.toLowerCase() }}:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/{{ github.event.repository.name.toLowerCase() }}:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/telegramforwarder2:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/telegramforwarder2:${{ github.sha }}
 
           # platforms: 构建的目标平台。linux/amd64 是标准 x86 服务器，linux/arm64 适用于树莓派等 ARM 设备
           platforms: linux/amd64,linux/arm64
