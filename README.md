@@ -88,11 +88,11 @@ Telegram 转发器是一个强大的消息转发工具，只需要你的账号�
 ```bash
 mkdir ./TelegramForwarder && cd ./TelegramForwarder
 ```
-下载仓库的 [**docker-compose.yml**](https://github.com/Heavrnl/TelegramForwarder/blob/main/docker-compose.yml) 到目录下
+下载仓库的 [**docker-compose.yml**](https://github.com/AjianNie/TelegramForwarder2/blob/main/docker-compose.yml) 到目录下
 
 接着下载或复制仓库的 **[.env.example](./.env.example)** 文件，填入必填项，然后重命名为`.env`
 ```bash
-wget https://raw.githubusercontent.com/Heavrnl/TelegramForwarder/refs/heads/main/.env.example -O .env
+wget https://raw.githubusercontent.com/AjianNie/TelegramForwarder2/refs/heads/main/.env.example -O .env
 ```
 
 
