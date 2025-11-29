@@ -3,8 +3,8 @@ services:
     image: angelbean/telegramforwarder2:latest
     container_name: telegram-forwarder
     # 如果需要使用 RSS 功能，请取消以下注释
-    # ports:
-    #   - 9804:8000
+    ports:
+      - 9804:8000
     restart: unless-stopped
     volumes:
       - ./db:/app/db
@@ -19,7 +19,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"
+        max-size: "5m"
         max-file: "3"
         compress: "true"
     stdin_open: true
