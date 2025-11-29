@@ -1,55 +1,59 @@
-# 忽略环境变量文件
+# 环境变量文件
 .env
 .env.example
 
-# 忽略数据库文件
+# 数据库文件
 *.db
 db/forward.db1
 
-# 忽略 Python 生成的缓存文件
-**/__pycache__/
+# Python 缓存文件
+__pycache__/
 *.py[cod]
 *$py.class
+*.so
+.Python
+*.egg-info/
 
-# 忽略虚拟环境
-**/venv/
-**/env/
-**/ENV/
+# 虚拟环境
+venv/
+env/
+ENV/
+.venv/
 
-# 忽略 Telethon 会话文件
+# Telethon 会话文件
 *.session
-*.session-journal 
+*.session-journal
 
-# 忽略 IDE 配置文件
+# IDE 配置
 .idea/
-ufb/.idea
+.vscode/
+*.swp
+*.swo
 
-# 忽略示例和临时配置文件
-/example
-/config/*
-ufb/config/*
+# 示例和配置文件
+example/
+**/config/*
 
-# 忽略无用的图片和测试目录
-**/test/
-**/images/
+# 测试和图片目录
+test/
+images/
 
-# 忽略 RSS 相关数据和临时文件
-/rss/media/*
-/rss/data/*
+# RSS 相关数据
+rss/media/
+rss/data/
 
-# 忽略日志文件
-logs/*
+# 日志和临时文件
+logs/
+temp/
 
-# 忽略临时文件夹
-/temp/*
-
-# 额外忽略 `.git` 和 Docker 相关文件，防止意外复制
+# 系统文件
+.DS_Store
 .git
 .gitignore
-.dockerignore
-Dockerfile
-docker-compose.yml
-.github
 .gitattributes
-.DS_Store
+.github/
+docker-compose.yml
 
+# Node 相关（如果有前端的话）
+node_modules/
+npm-debug.log

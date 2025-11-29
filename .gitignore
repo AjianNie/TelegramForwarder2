@@ -1,18 +1,38 @@
+# 忽略Git版本控制目录和相关文件
+.git
+.gitignore
+
+# 忽略IDE和编辑器的配置文件
+.idea/
+.vscode/
+
+
 # 环境变量文件
 .env
+*.env
 
 # 数据库文件
 *.db
+db/
 
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+.Python
+*.egg-info/
+
 
 # 虚拟环境
 venv/
 env/
 ENV/
+*.venv
+
+# 忽略特定配置文件和备份文件
+**/config/config.json
+copy.py
 
 # Telethon session 文件
 *.session
@@ -32,4 +52,5 @@ handlers/bot_handler copy.py
 /rss/data
 
 /logs
+*.log
 logs/telegram_forwarder.log

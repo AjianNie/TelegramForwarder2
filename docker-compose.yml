@@ -1,11 +1,13 @@
+#
 services:
-  telegram-forwarder:
+  telegram-forwarder2:
     image: angelbean/telegramforwarder2:latest
-    container_name: telegram-forwarder
-    # 如果需要使用 RSS 功能，请取消以下注释
+    container_name: telegram-forwarder2
+    stdin_open: true
+    tty: true
+    # RSS网页端口, RSS相关设置在.env中
     ports:
-      - 9804:8000
-    restart: unless-stopped
+      - 9000:8000
     volumes:
       - ./db:/app/db
       - ./.env:/app/.env
@@ -16,12 +18,14 @@ services:
       - ./config:/app/config
       - ./rss/data:/app/rss/data
       - ./rss/media:/app/rss/media
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "3"
-        compress: "true"
-    stdin_open: true
-    tty: true
+
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 256m
+          pids: 100
+    memswap_limit: 512m
+
+    restart: unless-stopped
 
