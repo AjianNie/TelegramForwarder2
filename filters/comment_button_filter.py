@@ -8,6 +8,7 @@ from filters.base_filter import BaseFilter
 from telethon.tl.functions.channels import GetFullChannelRequest
 from utils.common import get_main_module
 from difflib import SequenceMatcher
+from .rate_limiter import global_rate_limiter
 import traceback
 logger = logging.getLogger(__name__)
 
@@ -43,9 +44,8 @@ class CommentButtonFilter(BaseFilter):
                 client = main.user_client if (main and hasattr(main, 'user_client')) else context.client
                 
                 event = context.event
-                
+                await global_rate_limiter.get_token()
                 channel_entity = await client.get_entity(event.chat_id)
-                
                 channel_username = None
                 # logger.info(f"获取频道实体: {channel_entity}")
                 # logger.info(f"频道属性内容: {channel_entity.__dict__}")
@@ -71,6 +71,7 @@ class CommentButtonFilter(BaseFilter):
                     return True
                     
                 try:
+                    await global_rate_limiter.get_token()
                     full_channel = await client(GetFullChannelRequest(channel_entity))
                     
                     if not full_channel.full_chat.linked_chat_id:
@@ -78,7 +79,7 @@ class CommentButtonFilter(BaseFilter):
                         return True
                         
                     linked_group_id = full_channel.full_chat.linked_chat_id
-                    
+                    await global_rate_limiter.get_token()
                     linked_group = await client.get_entity(linked_group_id)
                     
                     channel_msg_id = event.message.id
@@ -88,6 +89,7 @@ class CommentButtonFilter(BaseFilter):
                         media_group_messages = []
                         
                         try:
+                            await global_rate_limiter.get_token()
                             async for message in client.iter_messages(
                                 channel_entity,
                                 limit=20,  # 限制查询消息数量
@@ -121,6 +123,7 @@ class CommentButtonFilter(BaseFilter):
                     
                     try:
                         logger.info(f"尝试使用用户客户端获取群组 {linked_group_id} 的消息")
+                        await global_rate_limiter.get_token()
                         group_messages = await client.get_messages(linked_group, limit=5)
                         logger.info(f"成功获取关联群组 {linked_group_id} 的 {len(group_messages)} 条消息")
                         

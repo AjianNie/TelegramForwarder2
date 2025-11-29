@@ -9,6 +9,7 @@ import traceback
 from filters.base_filter import BaseFilter
 from models.models import get_session, PushConfig
 from enums.enums import PreviewMode
+from .rate_limiter import global_rate_limiter
 
 logger = logging.getLogger(__name__)
 
@@ -120,6 +121,7 @@ class PushFilter(BaseFilter):
                 need_cleanup = True
                 for message in context.media_group_messages:
                     if message.media:
+                        await global_rate_limiter.get_token()
                         file_path = await message.download_media(os.path.join(os.getcwd(), 'temp'))
                         if file_path:
                             files.append(file_path)
@@ -132,6 +134,7 @@ class PushFilter(BaseFilter):
                 need_cleanup = True
                 for message in context.media_group_messages:
                     if message.media:
+                        await global_rate_limiter.get_token()
                         file_path = await message.download_media(os.path.join(os.getcwd(), 'temp'))
                         if file_path:
                             files.append(file_path)
@@ -249,6 +252,7 @@ class PushFilter(BaseFilter):
             elif rule.enable_only_push and event.message and event.message.media:
                 logger.info(f'需要自己下载文件，开始下载单个媒体消息...')
                 need_cleanup = True
+                await global_rate_limiter.get_token()
                 file_path = await event.message.download_media(os.path.join(os.getcwd(), 'temp'))
                 if file_path:
                     files.append(file_path)

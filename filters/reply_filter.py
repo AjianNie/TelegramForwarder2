@@ -5,6 +5,7 @@ from filters.base_filter import BaseFilter
 from utils.common import get_main_module
 import traceback
 logger = logging.getLogger(__name__)
+from .rate_limiter import global_rate_limiter
 
 class ReplyFilter(BaseFilter):
     """
@@ -45,7 +46,7 @@ class ReplyFilter(BaseFilter):
             buttons = [[comment_button]]
             
             logger.info(f"正在使用Bot给已转发的媒体组消息 {first_forwarded_msg.id} 发送评论区按钮回复")
-            
+            await global_rate_limiter.get_token()
             await client.send_message(
                 entity=target_chat_id,
                 message="💬 评论区",

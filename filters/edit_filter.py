@@ -5,6 +5,7 @@ from enums.enums import HandleMode, PreviewMode
 from utils.common import get_main_module
 from telethon.tl.types import Channel
 import traceback
+from .rate_limiter import global_rate_limiter
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,7 @@ class EditFilter(BaseFilter):
         if rule.handle_mode != HandleMode.EDIT:
             logger.debug(f"当前规则非编辑模式 (当前模式: {rule.handle_mode})，跳过编辑处理")
             return True
-            
+        await global_rate_limiter.get_token()
         chat = await event.get_chat()
         logger.debug(f"聊天类型: {type(chat).__name__}, 聊天ID: {chat.id}, 聊天标题: {getattr(chat, 'title', '未知')}")
         
@@ -80,7 +81,7 @@ class EditFilter(BaseFilter):
                     try:
                         text_to_edit = message_text if message.id == event.message.id else ""
                         logger.debug(f"尝试编辑媒体组消息 {message.id}, 媒体类型: {type(message.media).__name__ if message.media else '无媒体'}")
-                        
+                        await global_rate_limiter.get_token()
                         await user_client.edit_message(
                             event.chat_id,
                             message.id,
@@ -101,7 +102,7 @@ class EditFilter(BaseFilter):
                 try:
                     logger.debug(f"尝试编辑单条消息 {event.message.id}, 消息类型: {type(event.message).__name__}, 媒体类型: {type(event.message.media).__name__ if event.message.media else '无媒体'}")
                     logger.debug(f"使用解析模式: {rule.message_mode.value}")
-                    
+                    await global_rate_limiter.get_token()
                     await user_client.edit_message(
                         event.chat_id,
                         event.message.id,

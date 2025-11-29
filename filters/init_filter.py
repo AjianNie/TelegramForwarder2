@@ -6,6 +6,7 @@ from utils.constants import TEMP_DIR
 from utils.media import get_max_media_size
 
 from filters.base_filter import BaseFilter
+from .rate_limiter import global_rate_limiter
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +35,7 @@ class InitFilter(BaseFilter):
                 # await asyncio.sleep(1)
                 
                 try:
+                    await global_rate_limiter.get_token()
                     async for message in event.client.iter_messages(
                         event.chat_id,
                         limit=20,

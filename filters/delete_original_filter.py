@@ -1,6 +1,7 @@
 import logging
 from filters.base_filter import BaseFilter
 from utils.common import get_main_module
+from .rate_limiter import global_rate_limiter
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +31,7 @@ class DeleteOriginalFilter(BaseFilter):
             user_client = main.user_client  # 获取用户客户端
             
             if event.message.grouped_id:
+                await global_rate_limiter.get_token()
                 async for message in user_client.iter_messages(
                         event.chat_id,
                         min_id=event.message.id - 10,
@@ -37,10 +39,13 @@ class DeleteOriginalFilter(BaseFilter):
                         reverse=True
                 ):
                     if message.grouped_id == event.message.grouped_id:
+                        await global_rate_limiter.get_token()
                         await message.delete()
                         logger.info(f'已删除媒体组消息 ID: {message.id}')
             else:
+                await global_rate_limiter.get_token()
                 message = await user_client.get_messages(event.chat_id, ids=event.message.id)
+                await global_rate_limiter.get_token()
                 await message.delete()
                 logger.info(f'已删除原始消息 ID: {event.message.id}')
                 

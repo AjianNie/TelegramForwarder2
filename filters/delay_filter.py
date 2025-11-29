@@ -2,6 +2,7 @@ import asyncio
 import logging
 from filters.base_filter import BaseFilter
 from utils.common import get_main_module
+from .rate_limiter import global_rate_limiter
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +51,7 @@ class DelayFilter(BaseFilter):
                 client = main.user_client if (main and hasattr(main, 'user_client')) else context.client
                 
                 logger.info(f"[规则ID:{rule.id}] 正在获取聊天 {chat_id} 的消息 {original_id}...")
+                await global_rate_limiter.get_token()
                 updated_message = await client.get_messages(chat_id, ids=original_id)
 
                 

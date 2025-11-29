@@ -3,6 +3,7 @@ import os
 from filters.base_filter import BaseFilter
 from enums.enums import PreviewMode
 from telethon.errors import FloodWaitError
+from .rate_limiter import global_rate_limiter
 
 logger = logging.getLogger(__name__)
 
@@ -39,12 +40,14 @@ class SenderFilter(BaseFilter):
         try:
             entity = None
             try:
+                await global_rate_limiter.get_token()
                 entity = await client.get_entity(target_chat_id)
                 logger.info(f'成功获取目标聊天实体: {target_chat.name} (ID: {target_chat_id})')
             except Exception as e1:
                 try:
                     if not str(target_chat_id).startswith('-100'):
                         super_group_id = int(f'-100{abs(target_chat_id)}')
+                        await global_rate_limiter.get_token()
                         entity = await client.get_entity(super_group_id)
                         target_chat_id = super_group_id  # 更新使用正确的ID
                         logger.info(f'使用私有群组ID格式成功获取实体: {target_chat.name} (ID: {target_chat_id})')
@@ -52,6 +55,7 @@ class SenderFilter(BaseFilter):
                     try:
                         if not str(target_chat_id).startswith('-'):
                             group_id = int(f'-{abs(target_chat_id)}')
+                            await global_rate_limiter.get_token()
                             entity = await client.get_entity(group_id)
                             target_chat_id = group_id  # 更新使用正确的ID
                             logger.info(f'使用常规群组ID格式成功获取实体: {target_chat.name} (ID: {target_chat_id})')
@@ -122,6 +126,7 @@ class SenderFilter(BaseFilter):
         try:
             for message in context.media_group_messages:
                 if message.media:
+                    await global_rate_limiter.get_token()
                     file_path = await message.download_media(os.path.join(os.getcwd(), 'temp'))
                     if file_path:
                         files.append(file_path)
@@ -140,7 +145,7 @@ class SenderFilter(BaseFilter):
                 if context.skipped_media:
                     context.original_link = f"\n原始消息: https://t.me/c/{str(event.chat_id)[4:]}/{event.message.id}"
                 caption_text += context.time_info + context.original_link
-                
+                await global_rate_limiter.get_token()
                 sent_messages = await client.send_file(
                     target_chat_id,
                     files,
@@ -191,7 +196,7 @@ class SenderFilter(BaseFilter):
             text_to_send = context.sender_info + text_to_send + context.time_info
             
             text_to_send += original_link
-                
+            await global_rate_limiter.get_token()
             await client.send_message(
                 target_chat_id,
                 text_to_send,
@@ -213,7 +218,7 @@ class SenderFilter(BaseFilter):
                     context.time_info + 
                     context.original_link
                 )
-                
+                await global_rate_limiter.get_token()
                 await client.send_file(
                     target_chat_id,
                     file_path,
@@ -256,7 +261,7 @@ class SenderFilter(BaseFilter):
         }[rule.is_preview]
         
         message_text = context.sender_info + context.message_text + context.time_info + context.original_link
-        
+        await global_rate_limiter.get_token()
         await client.send_message(
             target_chat_id,
             str(message_text),

@@ -12,6 +12,7 @@ import uuid
 from utils.constants import TEMP_DIR, RSS_MEDIA_DIR, get_rule_media_dir,RSS_HOST,RSS_PORT,RSS_ENABLED
 from models.models import get_session
 from utils.common import get_db_ops
+from .rate_limiter import global_rate_limiter
 
 logger = logging.getLogger(__name__)
 
@@ -289,6 +290,7 @@ class RSSFilter(BaseFilter):
                 local_path = os.path.join(rule_media_path, file_name)
                 try:
                     if not os.path.exists(local_path):
+                        await global_rate_limiter.get_token()
                         await message.download_media(local_path)
                         logger.info(f"下载媒体文件到: {local_path}")
                     
@@ -319,6 +321,7 @@ class RSSFilter(BaseFilter):
                 
                 try:
                     if not os.path.exists(local_path):
+                        await global_rate_limiter.get_token()
                         await message.download_media(local_path)
                         logger.info(f"下载图片到: {local_path}")
                     
@@ -357,6 +360,7 @@ class RSSFilter(BaseFilter):
                 
                 try:
                     if not os.path.exists(local_path):
+                        await global_rate_limiter.get_token()
                         await message.download_media(local_path)
                         logger.info(f"下载视频到: {local_path}")
                     
@@ -396,6 +400,7 @@ class RSSFilter(BaseFilter):
                 
                 try:
                     if not os.path.exists(local_path):
+                        await global_rate_limiter.get_token()
                         await message.download_media(local_path)
                         logger.info(f"下载音频到: {local_path}")
                     
@@ -427,6 +432,7 @@ class RSSFilter(BaseFilter):
                 
                 try:
                     if not os.path.exists(local_path):
+                        await global_rate_limiter.get_token()
                         await message.download_media(local_path)
                         logger.info(f"下载语音到: {local_path}")
                     
@@ -560,16 +566,19 @@ class RSSFilter(BaseFilter):
                                         logger.info(f"媒体文件已存在，跳过下载: {local_path}")
                                     else:
                                         try:
+                                            await global_rate_limiter.get_token()
                                             await msg.download_media(local_path)
                                             logger.info(f"直接下载图片到: {local_path}")
                                         except Exception as e:
                                             if "file reference has expired" in str(e):
                                                 logger.warning(f"文件引用已过期，尝试重新获取消息")
                                                 try:
+                                                    await global_rate_limiter.get_token()
                                                     refreshed_msg = await context.client.get_messages(
                                                         msg.chat_id, ids=msg.id
                                                     )
                                                     if refreshed_msg:
+                                                        await global_rate_limiter.get_token()
                                                         await refreshed_msg.download_media(local_path)
                                                         logger.info(f"成功重新下载图片到: {local_path}")
                                                     else:
@@ -614,16 +623,19 @@ class RSSFilter(BaseFilter):
                                         logger.info(f"媒体文件已存在，跳过下载: {local_path}")
                                     else:
                                         try:
+                                            await global_rate_limiter.get_token()
                                             await msg.download_media(local_path)
                                             logger.info(f"直接下载文档到: {local_path}")
                                         except Exception as e:
                                             if "file reference has expired" in str(e):
                                                 logger.warning(f"文件引用已过期，尝试重新获取消息")
                                                 try:
+                                                    await global_rate_limiter.get_token()
                                                     refreshed_msg = await context.client.get_messages(
                                                         msg.chat_id, ids=msg.id
                                                     )
                                                     if refreshed_msg:
+                                                        await global_rate_limiter.get_token()
                                                         await refreshed_msg.download_media(local_path)
                                                         logger.info(f"成功重新下载文档到: {local_path}")
                                                     else:

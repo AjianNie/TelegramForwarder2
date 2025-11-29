@@ -12,6 +12,7 @@ import base64
 import os
 import io
 import mimetypes
+from .rate_limiter import global_rate_limiter
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +77,7 @@ class AIFilter(BaseFilter):
                         if msg.photo or (msg.document and hasattr(msg.document, 'mime_type') and msg.document.mime_type.startswith('image/')):
                             try:
                                 buffer = io.BytesIO()
+                                await global_rate_limiter.get_token()
                                 await msg.download_media(file=buffer)
                                 buffer.seek(0)
                                 content = buffer.read()
@@ -101,6 +103,7 @@ class AIFilter(BaseFilter):
                     logger.info("检测到单条消息有媒体，下载到内存")
                     try:
                         buffer = io.BytesIO()
+                        await global_rate_limiter.get_token()
                         await event.message.download_media(file=buffer)
                         buffer.seek(0)
                         content = buffer.read()
@@ -277,7 +280,7 @@ async def _get_chat_messages(client, chat_id, minutes=None, count=None, delay_se
         messages = []
         limit = count if count else 500  # 设置一个合理的默认值
         processed_count = 0
-        
+        await global_rate_limiter.get_token()
         if minutes:
             
             end_time = datetime.now()

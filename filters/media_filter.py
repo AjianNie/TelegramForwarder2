@@ -11,6 +11,7 @@ from models.models import get_session
 from sqlalchemy import text
 from utils.common import get_db_ops
 from enums.enums import AddMode
+from .rate_limiter import global_rate_limiter
 logger = logging.getLogger(__name__)
 
 class MediaFilter(BaseFilter):
@@ -64,6 +65,7 @@ class MediaFilter(BaseFilter):
         total_media_count = 0  # 总媒体数量
         blocked_media_count = 0  # 被屏蔽的媒体数量
         try:
+            await global_rate_limiter.get_token()
             async for message in event.client.iter_messages(
                 event.chat_id,
                 limit=20,
@@ -217,6 +219,7 @@ class MediaFilter(BaseFilter):
                 if rule.only_rss:
                     return True
                 try:
+                    await global_rate_limiter.get_token()
                     file_path = await event.message.download_media(TEMP_DIR)
                     if file_path:
                         context.media_files.append(file_path)
